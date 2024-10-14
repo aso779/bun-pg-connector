@@ -20,6 +20,18 @@ type PgBunConnSet struct {
 	write *bun.DB
 }
 
+func NewPgBunConnSet(
+	conf PostgresRW,
+	log *zap.Logger,
+) *PgBunConnSet {
+	log.Info("new connection set constructed")
+
+	return &PgBunConnSet{
+		conf: conf,
+		log:  log,
+	}
+}
+
 func (r *PgBunConnSet) ReadPool() *bun.DB {
 	for readConnRetries := 0; ; readConnRetries++ {
 		if r.read == nil {
