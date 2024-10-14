@@ -13,6 +13,11 @@ import (
 	"go.uber.org/zap"
 )
 
+type BunConnSet interface {
+	ReadPool() *bun.DB
+	WritePool() *bun.DB
+}
+
 type PgBunConnSet struct {
 	conf  PostgresRW
 	log   *zap.Logger
