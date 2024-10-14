@@ -38,49 +38,46 @@ func NewPgBunConnSet(
 }
 
 func (r *PgBunConnSet) ReadPool() *bun.DB {
-	for readConnRetries := 0; ; readConnRetries++ {
-		if r.read == nil {
-			r.read = connect(r.conf.Read, r.log)
-		}
-
-		if readConnRetries > r.conf.Read.MaxConnRetries() {
-			panic("can't connect to read db")
-		}
-
-		if err := Ping(r.read); err != nil {
-			r.log.Info("connset: ping read conn", zap.Int("attempt", readConnRetries), zap.Error(err))
-			r.read = nil
-
-			time.Sleep(r.conf.Read.RetryInterval() * time.Millisecond)
-		} else {
-			break
-		}
-	}
+	r.read = r.reconnect(r.conf.Read, r.log, r.read)
 
 	return r.read
 }
 
 func (r *PgBunConnSet) WritePool() *bun.DB {
-	for writeConnAttempts := 0; ; writeConnAttempts++ {
-		if r.write == nil {
-			r.write = connect(r.conf.Write, r.log)
+	r.write = r.reconnect(r.conf.Write, r.log, r.write)
+
+	return r.write
+}
+
+func (r *PgBunConnSet) reconnect(
+	conf Postgres,
+	log *zap.Logger,
+	db *bun.DB,
+) *bun.DB {
+	for connAttempts := 0; ; connAttempts++ {
+		if db == nil {
+			db = connect(conf, log)
 		}
 
-		if writeConnAttempts > r.conf.Write.MaxConnRetries() {
-			panic("can't connect to write db")
+		if connAttempts > conf.MaxConnRetries() {
+			r.log.Panic("can't connect to db")
 		}
 
-		if err := Ping(r.write); err != nil {
-			r.log.Info("connset: ping write conn", zap.Int("attempt", writeConnAttempts), zap.Error(err))
-			r.write = nil
+		if err := Ping(db); err != nil {
+			r.log.Info("connset ping conn",
+				zap.String("name", r.conf.Read.AppName()),
+				zap.Int("attempt", connAttempts),
+				zap.Error(err),
+			)
+			db = nil
 
-			time.Sleep(r.conf.Write.RetryInterval() * time.Millisecond)
+			time.Sleep(conf.RetryInterval() * time.Millisecond)
 		} else {
 			break
 		}
 	}
 
-	return r.write
+	return db
 }
 
 func connect(

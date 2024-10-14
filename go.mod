@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/aso779/config-loader v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
