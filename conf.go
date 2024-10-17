@@ -13,23 +13,26 @@ type PostgresRW struct {
 }
 
 type Postgres struct {
-	AppNameProp        string      `yaml:"app_name"`
-	HostProp           string      `yaml:"host"`
-	PortProp           string      `yaml:"port"`
-	UserProp           string      `yaml:"user"`
-	PasswordProp       string      `yaml:"password"`
-	DatabaseProp       string      `yaml:"database"`
-	MaxOpenConnsProp   string      `yaml:"max_open_conns"`
-	MaxIdleConnsProp   string      `yaml:"max_idle_conns"`
-	TimezoneProp       string      `yaml:"timezone"`
-	DialTimeoutProp    string      `yaml:"dial_timeout"`
-	ReadTimeoutProp    string      `yaml:"read_timeout"`
-	WriteTimeoutProp   string      `yaml:"write_timeout"`
-	MaxConnRetriesProp string      `yaml:"max_conn_retries"`
-	RetryIntervalProp  string      `yaml:"retry_interval"`
-	Log                PostgresLog `yaml:"log"`
-	TLS                TLS         `yaml:"tls"`
+	AppNameProp                 string      `yaml:"app_name"`
+	HostProp                    string      `yaml:"host"`
+	PortProp                    string      `yaml:"port"`
+	UserProp                    string      `yaml:"user"`
+	PasswordProp                string      `yaml:"password"`
+	DatabaseProp                string      `yaml:"database"`
+	MaxOpenConnsProp            string      `yaml:"max_open_conns"`
+	MaxIdleConnsProp            string      `yaml:"max_idle_conns"`
+	TimezoneProp                string      `yaml:"timezone"`
+	DialTimeoutProp             string      `yaml:"dial_timeout"`
+	ReadTimeoutProp             string      `yaml:"read_timeout"`
+	WriteTimeoutProp            string      `yaml:"write_timeout"`
+	MaxConnRetriesProp          string      `yaml:"max_conn_retries"`
+	RetryIntervalProp           string      `yaml:"retry_interval"`
+	IsDiscardUnknownColumnsProp string      `yaml:"is_discard_unknown_columns"`
+	Log                         PostgresLog `yaml:"log"`
+	TLS                         TLS         `yaml:"tls"`
 }
+
+//bun.WithDiscardUnknownColumns()
 
 func (r Postgres) AppName() string {
 	return cfgloader.LoadStringProp(r.AppNameProp)
@@ -89,6 +92,10 @@ func (r Postgres) MaxConnRetries() int {
 
 func (r Postgres) RetryInterval() time.Duration {
 	return cfgloader.LoadDurationProp(r.RetryIntervalProp)
+}
+
+func (r Postgres) IsDiscardUnknownColumns() bool {
+	return cfgloader.LoadBoolProp(r.IsDiscardUnknownColumnsProp)
 }
 
 func (r Postgres) DSN() string {

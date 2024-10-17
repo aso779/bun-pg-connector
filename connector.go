@@ -87,6 +87,7 @@ func connect(
 	var (
 		tlsConfig      *tls.Config
 		isWithInsecure pgdriver.Option
+		dbOpts         []bun.DBOption
 	)
 
 	if conf.TLS.IsInsecureSkipVerify() {
@@ -134,7 +135,11 @@ func connect(
 		isWithInsecure,
 	)
 
-	db := bun.NewDB(sql.OpenDB(conn), pgdialect.New())
+	if conf.IsDiscardUnknownColumns() {
+		dbOpts = append(dbOpts, bun.WithDiscardUnknownColumns())
+	}
+
+	db := bun.NewDB(sql.OpenDB(conn), pgdialect.New(), dbOpts...)
 
 	if conf.Log.IsEnable() {
 		db.AddQueryHook(NewLogQueryHook(conf, log))
