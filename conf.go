@@ -27,7 +27,7 @@ type Postgres struct {
 	WriteTimeoutProp   string      `yaml:"write_timeout"`
 	MaxConnRetriesProp string      `yaml:"max_conn_retries"`
 	RetryIntervalProp  string      `yaml:"retry_interval"`
-	Log                PostgresLog `yaml:"postgres_log"`
+	Log                PostgresLog `yaml:"log"`
 	TLS                TLS         `yaml:"tls"`
 }
 
