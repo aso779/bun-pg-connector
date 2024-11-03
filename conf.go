@@ -32,8 +32,6 @@ type Postgres struct {
 	TLS                         TLS         `yaml:"tls"`
 }
 
-//bun.WithDiscardUnknownColumns()
-
 func (r Postgres) AppName() string {
 	return cfgloader.LoadStringProp(r.AppNameProp)
 }
