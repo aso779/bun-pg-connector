@@ -56,10 +56,13 @@ func (r *MockBunConnSet) connect(
 	conf Postgres,
 	log *zap.Logger,
 ) *bun.DB {
-	db := bun.NewDB(r.db, newDialect(pgdialect.New()))
+	var db *bun.DB
 
 	if conf.Log.IsEnable() {
+		db = bun.NewDB(r.db, pgdialect.New())
 		db.AddQueryHook(NewLogQueryHook(conf, log))
+	} else {
+		db = bun.NewDB(r.db, newDialect(pgdialect.New()))
 	}
 
 	return db
