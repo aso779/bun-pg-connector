@@ -11,7 +11,7 @@ import (
 
 type (
 	Transaction interface {
-		GetTx() bun.IDB
+		Tx() bun.IDB
 
 		Commit(
 			ctx context.Context,
@@ -26,6 +26,7 @@ type (
 		Begin(
 			ctx context.Context,
 			tx bun.IDB,
+			opts *sql.TxOptions,
 		) (Transaction, error)
 	}
 
@@ -104,6 +105,6 @@ func (r BunTransaction) Rollback(ctx context.Context) {
 	}
 }
 
-func (r BunTransaction) GetTx() bun.IDB {
+func (r BunTransaction) Tx() bun.IDB {
 	return r.tx
 }
